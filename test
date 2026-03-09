@@ -1,0 +1,78 @@
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local enabled = false
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MannyFruitGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Toggle Button
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0,250,0,80)
+button.Position = UDim2.new(0,20,0,20)
+button.Text = "Auto Fruits: OFF"
+button.TextScaled = true
+button.BackgroundColor3 = Color3.fromRGB(0,170,255)
+button.TextColor3 = Color3.new(1,1,1)
+button.Parent = screenGui
+button.Active = true
+button.Draggable = true
+
+-- Status Label
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(0,250,0,50)
+status.Position = UDim2.new(0,20,0,110)
+status.Text = "Event: Inactive"
+status.TextScaled = true
+status.BackgroundColor3 = Color3.fromRGB(50,50,50)
+status.TextColor3 = Color3.new(1,1,1)
+status.Parent = screenGui
+
+-- Toggle
+button.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    button.Text = enabled and "Auto Fruits: ON" or "Auto Fruits: OFF"
+end)
+
+-- Function to collect a fruit
+local function collectFruit(fruit, root)
+    if fruit:IsA("Model") then
+        -- Touch every BasePart inside the model
+        for _, part in pairs(fruit:GetDescendants()) do
+            if part:IsA("BasePart") then
+                firetouchinterest(root, part, 0)
+                firetouchinterest(root, part, 1)
+            end
+        end
+    elseif fruit:IsA("BasePart") then
+        firetouchinterest(root, fruit, 0)
+        firetouchinterest(root, fruit, 1)
+    end
+end
+
+-- Main Loop
+while true do
+    task.wait(0.05) -- small wait for performance
+
+    if not enabled then continue end
+
+    local character = player.Character
+    if not character then continue end
+
+    local root = character:FindFirstChild("HumanoidRootPart")
+    if not root then continue end
+
+    local folder = workspace:FindFirstChild("MannyMishapCollectibles")
+    if folder then
+        status.Text = "Event: Active"
+
+        -- Collect fruits
+        for _, fruit in pairs(folder:GetChildren()) do
+            collectFruit(fruit, root)
+        end
+    else
+        status.Text = "Event: Inactive"
+    end
+end
