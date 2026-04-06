@@ -1,35 +1,40 @@
--- Anti AFK with GUI Toggle
-
 local VirtualUser = game:GetService("VirtualUser")
 local player = game.Players.LocalPlayer
-
 local enabled = false
 
--- Anti AFK Function
-player.Idled:Connect(function()
-    if enabled then
-        VirtualUser:CaptureController()
-        VirtualUser:ClickButton2(Vector2.new())
+task.spawn(function()
+    while true do
+        if enabled then
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end
+        task.wait(600)
     end
 end)
 
--- GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "AntiAFKGui"
+gui.Name = "AntiAFK"
+gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local button = Instance.new("TextButton")
-button.Size = UDim2.new(0,150,0,50)
-button.Position = UDim2.new(0,20,0,200)
+button.Size = UDim2.new(0, 160, 0, 50)
+button.Position = UDim2.new(0, 20, 0, 200)
+button.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+button.BorderSizePixel = 2
 button.Text = "Anti AFK: OFF"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 18
 button.Parent = gui
 
 button.MouseButton1Click:Connect(function()
     enabled = not enabled
-    
     if enabled then
         button.Text = "Anti AFK: ON"
+        button.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
     else
         button.Text = "Anti AFK: OFF"
+        button.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     end
 end)
